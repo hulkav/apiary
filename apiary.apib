@@ -1,0 +1,233 @@
+FORMAT: 1A
+HOST: https://www.csast.csas.cz/webapi/api/v1/ecbportal/administration
+
+# INT-1_CSAS_ECB_ADM_Polls
+
+### Changelog
+| Version | Date | Author | Status | Description |
+| ---- | ---- | ---- | ---- | ---- |
+| v1.1 | 6.11.2015 | Vladimír Hůlka (ext95440) | 1.1 | Updated routes |
+| v1.0 | 8.10.2015 | Vladimír Hůlka (ext95440) | 1.0 | First version |
+| v0.1 | 7.10.2015 | Vladimír Hůlka (ext95440) | Draft | Work in progress |
+
+
+
+## Group Basic Mechanisms
+
+Polls administration is a HTTP-1.1 REST service API that allows internal (bank) user to configure poll sources.
+
+See description of <a href="http://docs.ext1csaspolls.apiary.io/#">EXT-1_CSAS_ECB_Polls</a> for overall description of user notifications.
+
+For general overview of API features and capabilities see <a href="http://docs.ext0ebcbasicmechanisms1.apiary.io/#reference/basic-mechanisms">common basic mechanisms</a>.
+
+Paging and sorting is currently not supported.
+
+## Group API-s
+
+## Polls Collection [/polls]
+
+**Poll entity** 
+
+This is basic entity, consists of attributtes and list of choice.
+
+| Attribute        | Type    | Description
+|------------------|---------|-----------|------------
+| id               | number  | poll identifier 
+| nameCs           | string  | poll name CS
+| nameEn           | string  | poll name EN
+| questionCs       | string  | poll question CS
+| questionEn       | string  | poll question EN
+| creationDate     | string  | date of creation
+| publicationDate  | string  | publication date
+| expirationDate   | string  | expiration date
+| contentId      | string  | id of linked content eg. article
+
+### List All Polls [GET /polls]
+
+Methods returns all existing polls incl. choices.
+
++ Response 200 (application/json)
+        
+    + Attributes (array[POLL_FULL])
+        
+
+### Get poll [GET /polls/{id}]
+
+Return particular poll incl. choices.
+
++ Parameters
+
+    + id (required, number, `325`) - Poll identifier.
+
++ Response 200 (application/json)
+
+    + Attributes (POLL_FULL)
+
+
+### Create Poll [POST /polls]
+
+Creates new poll incl choices.
+
++ Request (application/json)
+
+    + Attributes (POLL_CREATE)
+    
+
++ Response 201 (application/json)
+
+    + Attributes (POLL_FULL)
+        
+
+
+### Update Poll [PUT /polls/{id}]
+
+Updates existing poll. Does NOT updates any choices.
+
++ Parameters
+
+    + id (required, number, `325`) - Poll identifier.
+    
+
++ Request (application/json)
+      
+    + Attributes (POLL_UPDATE)
+
++ Response 201 (application/json)
+
+    + Attributes (POLL_UPDATE)
+
+
+### Delete Poll [DELETE /polls/{id}]
+
+Deletes existing poll. Poll is not physically deleted, only flag deletedBy
+is updated.
+
+
++ Parameters
+
+    + id (required, number, `325`) - Poll identifier.
+
+
++ Response 204 (application/json)
+
+        
+
+## Choice Collection [/choices]
+
+**Choice entity** 
+
+Choice entity belongs to some poll. 
+
+| Attribute        | Type    | Description
+|------------------|---------|-----------|-----------------
+| id               | number  | choice identifier 
+| pollId           | number  | poll which choice belongs to
+| choiceCs         | number  | choice text CS
+| choiceEn         | number  | choice text EN
+
+
+
+### Create new Choice [POST /choices]
+
+Creates new choice for existing poll.
+
++ Request (application/json)
+        
+    + Attributes (CHOICE)
+
+
++ Response 201 (application/json)
+
+    + Attributes (CHOICE_FULL)
+      
+        
+### Update Choice [PUT /choices/{id}]
+
+Updates existing choice.
+
++ Parameters
+
+    + id (required, number, `325`) - Choice identifier.
+  
+
++ Request (application/json)
+
+    + Attributes (CHOICE_FULL)
+        
+        
++ Response 201 (application/json)
+
+    + Attributes (CHOICE_FULL)
+    
+
+
+### Delete Choice [DELETE /choices/{id}]
+
+Deletes existing choice.
+
++ Response 204 (application/json)
+
+### List Choices by Poll [GET /polls/{id}/choices]
+
+Returns all choices that belongs to some poll.
+
++ Parameters
+
+    + id (required, number, `325`) - Poll identifier.
+
++ Response 200 (application/json)
+
+    + Attributes (array[CHOICE_FULL])
+
+
+# Data Structures
+
+## POLL_UPDATE (object)
+- id: 12345 (number, required)
+- nameCs: Jméno ankety (string)
+- nameEn: Poll name  (string)
+- questionCs: Otázka ankety (string)
+- questionEn: Poll question  (string)
+- creationDate: `2015-10-07 17:12:12` (string) 
+- publicationDate: `2015-11-01 17:12:12` (string) 
+- expirationDate: `2016-10-07 17:12:12` (string) 
+- contentId: 54545454 (string)
+- createdBy: 9 (number)
+- anonymousVotes: true (boolean)
+
+## POLL_CREATE (object)
+- nameCs: Jméno ankety (string)
+- nameEn: Poll name  (string)
+- questionCs: Otázka ankety (string)
+- questionEn: Poll question  (string)
+- creationDate: `2015-10-07 17:12:12` (string) 
+- publicationDate: `2015-11-01 17:12:12` (string) 
+- expirationDate: `2016-10-07 17:12:12` (string) 
+- contentId: 54545454 (string)
+- anonymousVotes: true (boolean)
+- choices (array[CHOICE_CREATE])
+
+## POLL_FULL (object)
+- id: 12345 (number, required)
+- nameCs: Jméno ankety (string)
+- nameEn: Poll name  (string)
+- questionCs: Otázka ankety (string)
+- questionEn: Poll question  (string)
+- creationDate: `2015-10-07 17:12:12` (string) 
+- publicationDate: `2015-11-01 17:12:12` (string) 
+- expirationDate: `2016-10-07 17:12:12` (string) 
+- contentId: 54545454 (string)
+- anonymousVotes: true (boolean)
+- choices (array[CHOICE_FULL])
+- createdBy: 9 (number)
+
+## CHOICE_CREATE (object)
+- textCs: Odpověď 1(string)
+- textEn: Answer 1 (string)
+
+## CHOICE (CHOICE_CREATE)
+- pollId: 123 (number, required)
+
+## CHOICE_FULL (CHOICE)
+- id: 12345 (number, required)
+     
